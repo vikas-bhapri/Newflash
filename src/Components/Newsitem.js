@@ -1,13 +1,13 @@
 import logo from './unavailable.jpg'
-import React, { Component } from 'react'
+import React from 'react'
 import '../App.css'
 
-export class Newsitem extends Component {
+const Newsitem = (props) => {
 
     
-  render() {
 
-    let {title, description, imageUrl, newsUrl, date, author, source} = this.props;
+
+    let {title, description, imageUrl, newsUrl, date, author, source} = props;
 
     
     
@@ -19,11 +19,11 @@ export class Newsitem extends Component {
             <h5 className="card-title">{title}</h5>
             <p className="card-text">{description}</p>
             <p className='text-muted'>By {author?author:"Unknown"} on {new Date (date).toLocaleString(undefined, {timeZone: 'Asia/Kolkata'})}</p>
-            <a href={newsUrl} rel="noopener" target="_blank" className="btn btn-sm btn-dark readMoreBtn">Read more</a>
+            <a href={newsUrl} rel="noreferrer" target="_blank" className="btn btn-sm btn-dark readMoreBtn">Read more</a>
         </div>
         </div>
     )
-  }
+
 }
 
 export default Newsitem

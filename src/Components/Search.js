@@ -1,90 +1,92 @@
-import React, { Component } from 'react'
+import React, { useState,useEffect } from 'react'
 import Newsitem from "./Newsitem";
 import Spinner from "./Spinner";
 import InfiniteScroll from "react-infinite-scroll-component";
 
-export default class Search extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      articles: [],
-      loading: false,
-      page: 1,
-      totalResults: 0,
-      searchText: "",
-    };
-  }
+const Search = (props) => {
+  const [articles, setArticles] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalResults, setTotalResults] = useState(0)
+  const [searchText, setSearchText] = useState("")
 
-  handleChange = (event) => {
-    this.setState({ searchText: event.target.value });
+  const handleChange = (event) => {
+    setSearchText(event.target.value)
   };
 
-  search = async () => {
-    console.log(this.state.searchText);
+  const capitalize = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+
+  useEffect(() => {
+    document.title = `NewFlash - Search`;
+  }, [])
+  
+
+  const search = async () => {
     let date = new Date().getDate();
     let month = new Date().getMonth() + 1;
     let year = new Date().getFullYear();
-    let url = `https://newsapi.org/v2/everything?q=${this.state.searchText}&from=${year}-${month}-${date}&to=${year}-${month}-${date}&apiKey=${this.props.apiKey}`;
-    this.setState({ loading: true });
+    let url = `https://newsapi.org/v2/everything?q=${searchText}&sortBy=popularity&apiKey=${props.apiKey}`;
+    setLoading(true)
     let data = await fetch(url);
-    this.props.setProgress(30);
+    props.setProgress(30);
     let parsedData = await data.json();
-    this.props.setProgress(70);
-    this.setState({
-      articles: parsedData.articles,
-      totalResults: parsedData.totalResults,
-      loading: false,
-    });
-    this.props.setProgress(100);
+    props.setProgress(70);
+    setArticles(parsedData.articles);
+    setTotalResults(parsedData.totalResults)
+    setLoading(false)
+    props.setProgress(100);
   };
 
-  fetchMoreData = async () => {
+  const fetchMoreData = async () => {
     let date = new Date().getDate();
     let month = new Date().getMonth() + 1;
     let year = new Date().getFullYear();
-    this.setState({ page: this.state.page + 1 });
-    let url = `https://newsapi.org/v2/everything?q=${this.state.searchText}&from=${year}-${month}-${date}&to=${year}-${month}-${date}&apiKey=${this.props.apiKey}&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+
+    let url = `https://newsapi.org/v2/everything?q=${searchText}&apiKey=${props.apiKey}&page=${page+1}&pageSize=${props.pageSize}`;
+    setPage(page + 1)
+    setLoading(false)
     let data = await fetch(url);
     let parsedData = await data.json();
-    this.setState({
-      articles: this.state.articles.concat(parsedData.articles),
-      totalResults: parsedData.totalResults,
-      loading: false
-    });
+    setArticles(articles.concat(parsedData.articles));
+    setTotalResults(parsedData.totalResults);
+    setLoading(false)
   };
 
-  render() {
+
     return (
       <>
-        <div className="container my-5">
+        <div className="container" style={{marginTop:"80px"}}>
           <form className="d-flex">
             <input
               className="form-control me-2"
               type="search"
               placeholder="Search"
               aria-label="Search"
-              value={this.searchText}
-              onChange={this.handleChange}
+              value={searchText}
+              onChange={handleChange}
             />
             <button
               className="btn btn-outline-primary"
               type="button"
-              onClick={this.search}
+              onClick={search}
             >
               Search
             </button>
           </form>
         </div>
-        {this.state.loading && <Spinner />}
+        {loading && <Spinner />}
         <InfiniteScroll
-          dataLength={this.state.articles.length}
-          next={this.fetchMoreData}
-          hasMore={this.state.articles.length !== this.state.totalResults}
+          dataLength={articles.length}
+          next={fetchMoreData}
+          hasMore={articles.length !== totalResults}
           loader={<Spinner width="100px" />}
         >
           <div className="container">
             <div className="row">
-              {this.state.articles.map((ele) => {
+              {articles.map((ele) => {
                 return (
                   <div className="col-md-4" key={ele.url}>
                     <Newsitem
@@ -104,5 +106,7 @@ export default class Search extends Component {
         </InfiniteScroll>
       </>
     );
-  }
+
 }
+
+export default Search;
