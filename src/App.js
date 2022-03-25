@@ -8,6 +8,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
+import Search from './Components/Search';
 
 
 export default class  extends Component {
@@ -37,6 +38,7 @@ export default class  extends Component {
           <Route exact path="/science" element={<News setProgress={this.setProgress} apiKey={this.apiKey} key="science" pageSize={9} country="in" category="science"/>}/>
           <Route exact path="/sports" element={<News setProgress={this.setProgress} apiKey={this.apiKey} key="sports" pageSize={9} country="in" category="sports"/>}/>
           <Route exact path="/technology" element={<News setProgress={this.setProgress} apiKey={this.apiKey} key="technology" pageSize={9} country="in" category="technology"/>}/>
+          <Route exact path="/search" element={<Search setProgress={this.setProgress} apiKey={this.apiKey} key="technology" pageSize={9} country="in"/>}/>
           
         </Routes>
         </BrowserRouter>
